@@ -1,12 +1,14 @@
 import { TextField } from "@mui/material";
 import { Button } from "@mui/material";
 import { useState } from "react";
-import {auth} from "strateegia-api";
+import { auth } from "strateegia-api";
+import { useNavigate } from "react-router-dom";
 
 // const API_URL_USERS = "https://api.strateegia.digital/users/v1/";
 
 function Login() {
   const [login, setLogin] = useState({ user: "", password: "" });
+  const navigate = useNavigate();
 
   function handleChange(e) {
     setLogin({ ...login, [e.target.name]: e.target.value });
@@ -17,8 +19,13 @@ function Login() {
     e.preventDefault();
     try {
       const accessToken = await auth(login.user, login.password);
-      console.log(accessToken);
-      localStorage.setItem("accessToken", accessToken);
+      if (accessToken) {
+        console.log(accessToken);
+        localStorage.setItem("accessToken", accessToken);
+        navigate("/report");
+      } else {
+        throw new Error("Invalid credentials");
+      }
     } catch (error) {
       console.log(error);
     }

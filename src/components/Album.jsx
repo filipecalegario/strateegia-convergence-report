@@ -57,10 +57,14 @@ export default function Album(props) {
                     {card.questions[0].options.map((option) => {
                       return (
                         <>
-                          <Typography variant="body1">{option.text}</Typography>
-                          <Typography variant="subtitle2">
-                            {(option.average * 100).toFixed(0)}%
-                          </Typography>
+                          <Box sx={{ marginTop: 1 }}>
+                            <Typography variant="body1">
+                              {option.text}
+                            </Typography>
+                            <Typography variant="subtitle2">
+                              {(option.average * 100).toFixed(0)}%
+                            </Typography>
+                          </Box>
                         </>
                       );
                     })}

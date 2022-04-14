@@ -3,6 +3,7 @@ import { Routes, Route, Router } from 'react-router-dom';
 import Login from './pages/Login';
 import Report from './pages/Report';
 import Signin from './pages/Signin';
+import Canvas from './pages/Canvas';
 
 function App() {
   return (
@@ -10,6 +11,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Signin />} />
         <Route path="/report" element={<Report />} />
+        <Route path="/canvas" element={<Canvas />} />
       </Routes>
     </div>
   );

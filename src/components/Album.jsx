@@ -15,11 +15,11 @@ import { useNavigate } from "react-router-dom";
 
 const theme = createTheme();
 
-export default function Album(props) {
-  const cards = props.list;
+export default function Album({ list, updateSelected }) {
+  const cards = list;
 
   function handleChangeCheckbox(event) {
-    props.updateSelected(event);
+    updateSelected(event);
   }
 
   return (
@@ -29,7 +29,7 @@ export default function Album(props) {
         <Container sx={{ py: 1 }} maxWidth="md">
           {/* End hero unit */}
           <Grid container spacing={2}>
-            {cards.map((card) => (
+            {cards.map((card, index) => (
               <Grid item key={card.id} xs={12} sm={6} md={4}>
                 <Card
                   sx={{
@@ -65,11 +65,15 @@ export default function Album(props) {
                       );
                     })}
                   </CardContent>
-                  {props.updateSelected && (
+                  {updateSelected && (
                     <Checkbox
                       value={card.id}
-                      onChange={handleChangeCheckbox}
-                      inputProps={{ "aria-label": "controlled" }}
+                      name={String(index)}
+                      onChange={(event) => updateSelected(event)}
+                      inputProps={{
+                        "aria-label": "controlled",
+                        "data-order": index,
+                      }}
                     />
                   )}
                   {/* <CardActions>

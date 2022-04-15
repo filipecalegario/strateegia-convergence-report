@@ -28,20 +28,8 @@ export default function Report() {
   const [maps, setMaps] = useState([]);
   const [selectedMap, setSelectedMap] = useState("");
   const [convergencePoints, setConvergencePoints] = useState([]);
-  const [selected, setSelected] = useState([]);
+  const [selectedMapIdsByUser, setSelectedMapIdsByUser] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-
-  function handleUpdateSelected(event) {
-    if (event.target.checked) {
-      console.log("add to list");
-      console.log(event.target.value);
-      setSelected([...selected, event.target.value]);
-    } else {
-      console.log("remove from list");
-      console.log(event.target.value);
-      setSelected(selected.filter((item) => item !== event.target.value));
-    }
-  }
 
   async function handleProjectChange(event) {
     console.log("change");
@@ -62,12 +50,37 @@ export default function Report() {
     localStorage.setItem("selectedMap", mapId);
   }
 
+  function handleUpdateSelected(event) {
+    console.log(event);
+    if (event.target.checked) {
+      console.log("add to list");
+      console.log(event.target.value);
+      setSelectedMapIdsByUser([
+        ...selectedMapIdsByUser,
+        // { id: event.target.value, order: Number(event.target.name)},
+        {
+          id: event.target.value,
+          order: Number(event.target.dataset.order),
+        },
+      ]);
+    } else {
+      console.log("remove from list");
+      console.log(event.target.value);
+      setSelectedMapIdsByUser(
+        selectedMapIdsByUser.filter((item) => item.id !== event.target.value)
+      );
+    }
+
+    // localStorage.setItem("selectedMapIdsByUser", JSON.stringify(selectedMapIdsByUser));
+  }
+
   function handleGenerateButton() {
     console.log("generate");
-    console.log(selected);
-    if (selected.length > 0) {
-      const selectedConvergencePoints = selected.map((item) => {
-        return convergencePoints.find((cp) => cp.id === item);
+    console.log(selectedMapIdsByUser);
+    selectedMapIdsByUser.sort((a, b) => a.order - b.order);
+    if (selectedMapIdsByUser.length > 0) {
+      const selectedConvergencePoints = selectedMapIdsByUser.map((item) => {
+        return convergencePoints.find((cp) => cp.id === item.id);
       });
       console.log(selectedConvergencePoints);
       navigate("/canvas", {
@@ -123,21 +136,21 @@ export default function Report() {
       try {
         setIsLoading(true);
         const response = await getMapById(accessToken, selectedMap);
-        console.log(response);
+        // console.log(response);
         const convergencePointsFromApi = response.points.filter(
           (content) => content.point_type === "CONVERGENCE"
         );
-        console.log(convergencePointsFromApi);
+        // console.log(convergencePointsFromApi);
         const allApiCalls = [];
         convergencePointsFromApi.forEach((element) => {
           allApiCalls.push(getConvergencePointById(accessToken, element.id));
         });
         Promise.all(allApiCalls).then((values) => {
-          console.log("values");
-          console.log(values);
+          // console.log("values");
+          // console.log(values);
           setConvergencePoints((convPoints) => [...values]);
-          console.log("convPoints");
-          console.log(convergencePoints);
+          // console.log("convPoints");
+          // console.log(convergencePoints);
           setIsLoading(false);
         });
       } catch (error) {
@@ -149,8 +162,8 @@ export default function Report() {
 
   useEffect(() => {
     console.log("selected");
-    console.log(selected);
-  }, [selected]);
+    console.log(selectedMapIdsByUser);
+  }, [selectedMapIdsByUser]);
 
   return (
     <>
@@ -218,7 +231,11 @@ export default function Report() {
           mapa selecionado não possui pontos de convergência
         </Alert>
       )}
-      {isLoading && (<Box sx={{marginTop:2}}><CircularProgress /></Box>)}
+      {isLoading && (
+        <Box sx={{ marginTop: 2 }}>
+          <CircularProgress />
+        </Box>
+      )}
       <Album list={convergencePoints} updateSelected={handleUpdateSelected} />
     </>
   );

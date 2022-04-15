@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   getAllProjects,
   getProjectById,
@@ -12,10 +13,12 @@ import {
   MenuItem,
   Typography,
   Box,
+  Button,
 } from "@mui/material";
 import Album from "../components/Album";
 
 export default function Report() {
+  const navigate = useNavigate();
   const accessToken = localStorage.getItem("accessToken");
   // const navigate = useNavigate();
   const [labs, setLabs] = useState([]);
@@ -23,6 +26,53 @@ export default function Report() {
   const [maps, setMaps] = useState([]);
   const [selectedMap, setSelectedMap] = useState("");
   const [convergencePoints, setConvergencePoints] = useState([]);
+  const [selected, setSelected] = useState([]);
+
+  function handleUpdateSelected(event) {
+    if (event.target.checked) {
+      console.log("add to list");
+      console.log(event.target.value);
+      setSelected([...selected, event.target.value]);
+    } else {
+      console.log("remove from list");
+      console.log(event.target.value);
+      setSelected(selected.filter((item) => item !== event.target.value));
+    }
+  }
+
+  async function handleProjectChange(event) {
+    console.log("change");
+    setSelectedProject(event.target.value);
+    localStorage.setItem("selectedProject", event.target.value);
+    const response = await getProjectById(accessToken, event.target.value);
+    console.log(response);
+    setMaps(response.maps);
+    console.log(maps);
+    setSelectedMap(response.maps[0].id);
+    localStorage.setItem("selectedMap", response.maps[0].id);
+  }
+
+  async function handleMapChange(event) {
+    const mapId = event.target.value;
+    setSelectedMap(mapId);
+    localStorage.setItem("selectedMap", mapId);
+  }
+
+  function handleGenerateButton() {
+    console.log("generate");
+    console.log(selected);
+    if (selected.length > 0) {
+      const selectedConvergencePoints = selected.map((item) => {
+        return convergencePoints.find((cp) => cp.id === item);
+      });
+      console.log(selectedConvergencePoints);
+      navigate("/canvas", {
+        state: { id: 1, list: JSON.stringify(selectedConvergencePoints) },
+      });
+    } else {
+      alert("Please select at least one convergence point");
+    }
+  }
 
   useEffect(() => {
     async function fetchLab() {
@@ -35,22 +85,9 @@ export default function Report() {
       }
     }
     fetchLab();
+    setSelectedProject(localStorage.getItem("selectedProject"));
+    setSelectedMap(localStorage.getItem("selectedMap"));
   }, []);
-
-  async function handleProjectChange(event) {
-    console.log("change");
-    setSelectedProject(event.target.value);
-    const response = await getProjectById(accessToken, event.target.value);
-    console.log(response);
-    setMaps(response.maps);
-    console.log(maps);
-    setSelectedMap(response.maps[0].id);
-  }
-
-  async function handleMapChange(event) {
-    const mapId = event.target.value;
-    setSelectedMap(mapId);
-  }
 
   useEffect(() => {
     async function fetchConvergencePoints() {
@@ -79,6 +116,11 @@ export default function Report() {
     fetchConvergencePoints();
   }, [selectedMap]);
 
+  useEffect(() => {
+    console.log("selected");
+    console.log(selected);
+  }, [selected]);
+
   return (
     <>
       <Box
@@ -104,7 +146,7 @@ export default function Report() {
             {labs.map((lab) => {
               return lab.projects.map((project) => {
                 return (
-                  <MenuItem value={project.id}>
+                  <MenuItem key={project.id} value={project.id}>
                     {lab.lab.name ? lab.lab.name : "public"} - {project.title}
                   </MenuItem>
                 );
@@ -127,7 +169,15 @@ export default function Report() {
           </Select>
         </FormControl>
       </Box>
-      <Album list={convergencePoints} />
+      <Button
+        type="button"
+        margin="normal"
+        variant="contained"
+        onClick={handleGenerateButton}
+      >
+        Generate Canvas
+      </Button>
+      <Album list={convergencePoints} updateSelected={handleUpdateSelected} />
     </>
   );
 }

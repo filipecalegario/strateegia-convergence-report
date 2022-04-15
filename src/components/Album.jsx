@@ -16,46 +16,16 @@ import { useNavigate } from "react-router-dom";
 const theme = createTheme();
 
 export default function Album(props) {
-  const navigate = useNavigate();
   const cards = props.list;
 
-  const [selected, setSelected] = React.useState([]);
-
   function handleChangeCheckbox(event) {
-    if (event.target.checked) {
-      console.log("add to list");
-      console.log(event.target.value);
-      setSelected([...selected, event.target.value]);
-    } else {
-      console.log("remove from list");
-      console.log(event.target.value);
-      setSelected(selected.filter((item) => item !== event.target.value));
-    }
+    props.updateSelected(event);
   }
-
-  function handleGenerateButton() {
-    console.log("generate");
-    console.log(selected);
-    navigate("/canvas", { state: { id: 1, list: JSON.stringify(selected) } });
-  }
-
-  React.useEffect(() => {
-    console.log("selected");
-    console.log(selected);
-  }, [selected]);
 
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <main>
-        <Button
-          type="button"
-          margin="normal"
-          variant="contained"
-          onClick={handleGenerateButton}
-        >
-          Generate Canvas
-        </Button>
         <Container sx={{ py: 1 }} maxWidth="md">
           {/* End hero unit */}
           <Grid container spacing={2}>
@@ -87,7 +57,7 @@ export default function Album(props) {
                     {card.questions[0].options.map((option) => {
                       return (
                         <>
-                          <Box sx={{ marginTop: 1 }}>
+                          <Box key={option.id} sx={{ marginTop: 1 }}>
                             <Typography variant="body1">
                               {option.text}
                             </Typography>
@@ -99,11 +69,13 @@ export default function Album(props) {
                       );
                     })}
                   </CardContent>
-                  <Checkbox
-                    value={card.id}
-                    onChange={handleChangeCheckbox}
-                    inputProps={{ "aria-label": "controlled" }}
-                  />
+                  {props.updateSelected && (
+                    <Checkbox
+                      value={card.id}
+                      onChange={handleChangeCheckbox}
+                      inputProps={{ "aria-label": "controlled" }}
+                    />
+                  )}
                   {/* <CardActions>
                     <Button size="small">View</Button>
                     <Button size="small">Edit</Button>

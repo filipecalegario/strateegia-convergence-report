@@ -20,16 +20,16 @@ export default function Canvas() {
   return (
     <div>
       <h1>Canvas</h1>
-      <left>
-        <Button
-          type="button"
-          margin="normal"
-          variant="contained"
-          onClick={handleBackButton}
-        >
-          voltar para report
-        </Button>
-      </left>
+
+      <Button
+        type="button"
+        margin="normal"
+        variant="contained"
+        onClick={handleBackButton}
+      >
+        voltar para report
+      </Button>
+
       <Album list={list} updateSelected={null} />
     </div>
   );

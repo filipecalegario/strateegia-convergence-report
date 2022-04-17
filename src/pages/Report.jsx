@@ -28,7 +28,7 @@ export default function Report() {
   const [maps, setMaps] = useState([]);
   const [selectedMap, setSelectedMap] = useState("");
   const [convergencePoints, setConvergencePoints] = useState([]);
-  const [selectedMapIdsByUser, setSelectedMapIdsByUser] = useState([]);
+  const [selectedCardsIdsByUser, setSelectedCardsIdsByUser] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
   async function handleProjectChange(event) {
@@ -51,23 +51,24 @@ export default function Report() {
   }
 
   function handleUpdateSelected(event) {
-    console.log(event);
     if (event.target.checked) {
       console.log("add to list");
       console.log(event.target.value);
-      setSelectedMapIdsByUser([
-        ...selectedMapIdsByUser,
+      setSelectedCardsIdsByUser([
+        ...selectedCardsIdsByUser,
         // { id: event.target.value, order: Number(event.target.name)},
         {
           id: event.target.value,
-          order: Number(event.target.dataset.order),
+          order: event.target.dataset.order,
+          convPointId: event.target.dataset.convPointId,
+          questionId: event.target.dataset.questionId,
         },
       ]);
     } else {
       console.log("remove from list");
       console.log(event.target.value);
-      setSelectedMapIdsByUser(
-        selectedMapIdsByUser.filter((item) => item.id !== event.target.value)
+      setSelectedCardsIdsByUser(
+        selectedCardsIdsByUser.filter((item) => item.id !== event.target.value)
       );
     }
 
@@ -76,19 +77,64 @@ export default function Report() {
 
   function handleGenerateButton() {
     console.log("generate");
-    console.log(selectedMapIdsByUser);
-    selectedMapIdsByUser.sort((a, b) => a.order - b.order);
-    if (selectedMapIdsByUser.length > 0) {
-      const selectedConvergencePoints = selectedMapIdsByUser.map((item) => {
-        return convergencePoints.find((cp) => cp.id === item.id);
+    console.log(selectedCardsIdsByUser);
+    selectedCardsIdsByUser.sort((a, b) => (a.order > b.order ? 1 : -1));
+    if (selectedCardsIdsByUser.length > 0) {
+      const auxSelection = {};
+
+      selectedCardsIdsByUser.forEach((item) => {
+        if (!auxSelection[item.convPointId]) {
+          auxSelection[item.convPointId] = {
+            convPointId: item.convPointId,
+            questions: [],
+          };
+        }
+        auxSelection[item.convPointId].questions.push({
+          questionId: item.questionId,
+          order: item.order,
+        });
       });
-      console.log(selectedConvergencePoints);
+
+      console.log("auxSelection");
+      console.log(auxSelection);
+      const populatedSelection = [];
+
+      Object.keys(auxSelection).forEach((item) => {
+        console.log("item");
+        console.log(item);
+        const fullConvPoint = convergencePoints.find(
+          (cp) => cp.id === auxSelection[item].convPointId
+        );
+
+        if (fullConvPoint) {
+          const selectedQuestionIds = auxSelection[item].questions.map(
+            (question) => question.questionId
+          );
+          const filteredQuestions = fullConvPoint.questions.filter((q) => {
+            return selectedQuestionIds.includes(q.id);
+          });
+          console.log("filteredQuestions");
+          console.log(filteredQuestions);
+          fullConvPoint.questions = [...filteredQuestions];
+          populatedSelection.push(fullConvPoint);
+        }
+      });
+
+      console.log(populatedSelection);
       navigate("/canvas", {
-        state: { id: 1, list: JSON.stringify(selectedConvergencePoints) },
+        state: { id: 1, list: JSON.stringify(populatedSelection) },
       });
     } else {
       alert("por favor, selecione pelo menos um ponto de convergência");
     }
+  }
+
+  function calculateLengthQuestions(convergencePoints) {
+    let lengthQuestions = 0;
+    convergencePoints.forEach((cp) => {
+      lengthQuestions += cp.questions.length;
+    });
+    return lengthQuestions;
   }
 
   // ================================
@@ -149,8 +195,8 @@ export default function Report() {
           // console.log("values");
           // console.log(values);
           setConvergencePoints((convPoints) => [...values]);
-          // console.log("convPoints");
-          // console.log(convergencePoints);
+          console.log("convPoints");
+          console.log(convergencePoints);
           setIsLoading(false);
         });
       } catch (error) {
@@ -162,8 +208,8 @@ export default function Report() {
 
   useEffect(() => {
     console.log("selected");
-    console.log(selectedMapIdsByUser);
-  }, [selectedMapIdsByUser]);
+    console.log(selectedCardsIdsByUser);
+  }, [selectedCardsIdsByUser]);
 
   return (
     <>
@@ -237,6 +283,16 @@ export default function Report() {
         </Box>
       )}
       <Album list={convergencePoints} updateSelected={handleUpdateSelected} />
+      {calculateLengthQuestions(convergencePoints) > 10 && (
+        <Button
+          type="button"
+          margin="normal"
+          variant="contained"
+          onClick={handleGenerateButton}
+        >
+          gerar canvas
+        </Button>
+      )}
     </>
   );
 }

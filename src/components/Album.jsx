@@ -1,6 +1,5 @@
 import { Checkbox } from "@mui/material";
 import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import Container from "@mui/material/Container";
@@ -9,7 +8,6 @@ import Grid from "@mui/material/Grid";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import Typography from "@mui/material/Typography";
 import * as React from "react";
-import { useNavigate } from "react-router-dom";
 
 // const cards = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 
@@ -44,8 +42,8 @@ export default function Album({ list, updateSelected }) {
         <Container sx={{ py: 1 }} maxWidth="md">
           {/* End hero unit */}
           <Grid container spacing={2}>
-            {convergencePoints.map((convPoint, index) =>
-              convPoint.questions.map((question, index) => (
+            {convergencePoints.map((convPoint, indexConvPoint) =>
+              convPoint.questions.map((question, indexQuestion) => (
                 <Grid item key={question.id} xs={12} sm={6} md={4}>
                   <Card
                     sx={{
@@ -65,12 +63,13 @@ export default function Album({ list, updateSelected }) {
                     </CardContent>
                     {updateSelected && (
                       <Checkbox
-                        value={convPoint.id}
-                        name={String(index)}
+                        value={`${convPoint.id}#${question.id}`}
                         onChange={(event) => updateSelected(event)}
                         inputProps={{
                           "aria-label": "controlled",
-                          "data-order": index,
+                          "data-order": `${indexConvPoint}-${indexQuestion}`,
+                          "data-question-id": question.id,
+                          "data-conv-point-id": convPoint.id,
                         }}
                       />
                     )}

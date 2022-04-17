@@ -10,24 +10,6 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { auth } from "strateegia-api";
 import { useNavigate } from "react-router-dom";
 
-function Copyright(props) {
-  return (
-    <Typography
-      variant="body2"
-      color="text.secondary"
-      align="center"
-      {...props}
-    >
-      {"Copyright © "}
-      <Link color="inherit" href="https://mui.com/">
-        Your Website
-      </Link>{" "}
-      {new Date().getFullYear()}
-      {"."}
-    </Typography>
-  );
-}
-
 const theme = createTheme();
 
 export default function SignIn() {
@@ -38,10 +20,6 @@ export default function SignIn() {
     const data = new FormData(event.currentTarget);
     const user = data.get("email");
     const password = data.get("password");
-    console.log({
-      email: user,
-      password: password,
-    });
     try {
       const accessToken = await auth(user, password);
       if (accessToken) {

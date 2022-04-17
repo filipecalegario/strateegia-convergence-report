@@ -1,6 +1,5 @@
 import './App.css';
-import { Routes, Route, Router } from 'react-router-dom';
-import Login from './pages/Login';
+import { Routes, Route } from 'react-router-dom';
 import Report from './pages/Report';
 import Signin from './pages/Signin';
 import Canvas from './pages/Canvas';

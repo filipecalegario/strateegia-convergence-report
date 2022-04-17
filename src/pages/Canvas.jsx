@@ -26,8 +26,9 @@ export default function Canvas() {
         margin="normal"
         variant="contained"
         onClick={handleBackButton}
+        sx={{ marginBottom: 2, marginTop: 1 }}
       >
-        voltar para report
+        voltar para relatório
       </Button>
 
       <Album list={list} updateSelected={null} />

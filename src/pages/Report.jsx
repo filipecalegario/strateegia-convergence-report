@@ -222,6 +222,7 @@ export default function Report() {
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
+          
         }}
       >
         <Typography component="h1" variant="h5">
@@ -272,6 +273,7 @@ export default function Report() {
           margin="normal"
           variant="contained"
           onClick={handleGenerateButton}
+          sx={{ marginBottom: 2, marginTop: 1 }}
         >
           gerar canvas
         </Button>

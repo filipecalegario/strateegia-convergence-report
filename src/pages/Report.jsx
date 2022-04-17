@@ -30,6 +30,7 @@ export default function Report() {
   const [convergencePoints, setConvergencePoints] = useState([]);
   const [selectedCardsIdsByUser, setSelectedCardsIdsByUser] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [quantCards, setQuantCards] = useState(0);
 
   async function handleProjectChange(event) {
     console.log("change");
@@ -129,14 +130,6 @@ export default function Report() {
     }
   }
 
-  function calculateLengthQuestions(convergencePoints) {
-    let lengthQuestions = 0;
-    convergencePoints.forEach((cp) => {
-      lengthQuestions += cp.questions.length;
-    });
-    return lengthQuestions;
-  }
-
   // ================================
 
   useEffect(() => {
@@ -211,6 +204,16 @@ export default function Report() {
     console.log(selectedCardsIdsByUser);
   }, [selectedCardsIdsByUser]);
 
+  useEffect(() => {
+    let lengthQuestions = 0;
+    convergencePoints.forEach((cp) => {
+      lengthQuestions += cp.questions.length;
+    });
+    setQuantCards(lengthQuestions);
+    console.log("quantCards");
+    console.log(lengthQuestions);
+  }, [convergencePoints]);
+
   return (
     <>
       <Box
@@ -283,12 +286,13 @@ export default function Report() {
         </Box>
       )}
       <Album list={convergencePoints} updateSelected={handleUpdateSelected} />
-      {calculateLengthQuestions(convergencePoints) > 10 && (
+      {quantCards > 10 && (
         <Button
           type="button"
           margin="normal"
           variant="contained"
           onClick={handleGenerateButton}
+          sx={{ marginBottom: 3, marginTop: 1 }}
         >
           gerar canvas
         </Button>

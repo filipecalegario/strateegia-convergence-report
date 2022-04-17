@@ -16,10 +16,25 @@ import { useNavigate } from "react-router-dom";
 const theme = createTheme();
 
 export default function Album({ list, updateSelected }) {
-  const cards = list;
+  const convergencePoints = list;
 
   function handleChangeCheckbox(event) {
     updateSelected(event);
+  }
+
+  function calculateHigherOption(options) {
+    const optionsCopy = [...options];
+    optionsCopy.sort((a, b) => (a.average > b.average ? -1 : 1));
+    const option = optionsCopy[0];
+    // return {id:optionsCopy[0].id, text:optionsCopy[0].text, average:optionsCopy[0].average};
+    return (
+      <Box key={option.id} sx={{ marginTop: 1 }}>
+        <Typography variant="body1">{option.text}</Typography>
+        <Typography variant="subtitle2">
+          {(option.average * 100).toFixed(0)}%
+        </Typography>
+      </Box>
+    );
   }
 
   return (
@@ -29,60 +44,40 @@ export default function Album({ list, updateSelected }) {
         <Container sx={{ py: 1 }} maxWidth="md">
           {/* End hero unit */}
           <Grid container spacing={2}>
-            {cards.map((card, index) => (
-              <Grid item key={card.id} xs={12} sm={6} md={4}>
-                <Card
-                  sx={{
-                    height: "100%",
-                    display: "flex",
-                    flexDirection: "column",
-                  }}
-                >
-                  {/* <CardMedia
-                    component="img"
+            {convergencePoints.map((convPoint, index) =>
+              convPoint.questions.map((question, index) => (
+                <Grid item key={question.id} xs={12} sm={6} md={4}>
+                  <Card
                     sx={{
-                      // 16:9
-                      pt: "56.25%",
+                      height: "100%",
+                      display: "flex",
+                      flexDirection: "column",
                     }}
-                    image="https://source.unsplash.com/random"
-                    alt="random"
-                  /> */}
-                  <CardContent sx={{ flexGrow: 1 }}>
-                    <Typography gutterBottom variant="h7" component="h6">
-                      {card.id}
-                    </Typography>
-                    <Typography variant="body2">
-                      {card.questions[0].text}
-                    </Typography>
-                    {card.questions[0].options.map((option) => {
-                      return (
-                        <Box key={option.id} sx={{ marginTop: 1 }}>
-                          <Typography variant="body1">{option.text}</Typography>
-                          <Typography variant="subtitle2">
-                            {(option.average * 100).toFixed(0)}%
-                          </Typography>
-                        </Box>
-                      );
-                    })}
-                  </CardContent>
-                  {updateSelected && (
-                    <Checkbox
-                      value={card.id}
-                      name={String(index)}
-                      onChange={(event) => updateSelected(event)}
-                      inputProps={{
-                        "aria-label": "controlled",
-                        "data-order": index,
-                      }}
-                    />
-                  )}
-                  {/* <CardActions>
-                    <Button size="small">View</Button>
-                    <Button size="small">Edit</Button>
-                  </CardActions> */}
-                </Card>
-              </Grid>
-            ))}
+                  >
+                    <CardContent sx={{ flexGrow: 1 }}>
+                      <Typography gutterBottom variant="h7" component="h6">
+                        {convPoint.id} - {question.id}
+                      </Typography>
+                      <Typography variant="body2" component="p">
+                        {question.text}
+                      </Typography>
+                      {calculateHigherOption(question.options)}
+                    </CardContent>
+                    {updateSelected && (
+                      <Checkbox
+                        value={convPoint.id}
+                        name={String(index)}
+                        onChange={(event) => updateSelected(event)}
+                        inputProps={{
+                          "aria-label": "controlled",
+                          "data-order": index,
+                        }}
+                      />
+                    )}
+                  </Card>
+                </Grid>
+              ))
+            )}
           </Grid>
         </Container>
       </main>

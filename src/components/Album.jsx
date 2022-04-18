@@ -50,29 +50,35 @@ export default function Album({ list, updateSelected }) {
                       height: "100%",
                       display: "flex",
                       flexDirection: "column",
+                      alignItems: "center",
+                      justifyContent: "space-between",
                     }}
                   >
-                    <CardContent sx={{ flexGrow: 1 }}>
-                      <Typography gutterBottom variant="h7" component="h6">
+                    <CardContent sx={{}}>
+                      {/* <Typography gutterBottom variant="h7" component="h6">
                         {convPoint.id} - {question.id}
-                      </Typography>
-                      <Typography variant="body2" component="p">
-                        {question.text}
-                      </Typography>
+                      </Typography> */}
+                      <Box>
+                        <Typography variant="body2" component="p">
+                          {question.text}
+                        </Typography>
+                      </Box>
                       {calculateHigherOption(question.options)}
                     </CardContent>
-                    {updateSelected && (
-                      <Checkbox
-                        value={`${convPoint.id}#${question.id}`}
-                        onChange={(event) => updateSelected(event)}
-                        inputProps={{
-                          "aria-label": "controlled",
-                          "data-order": `${indexConvPoint}-${indexQuestion}`,
-                          "data-question-id": question.id,
-                          "data-conv-point-id": convPoint.id,
-                        }}
-                      />
-                    )}
+                    <Box>
+                      {updateSelected && (
+                        <Checkbox
+                          value={`${convPoint.id}#${question.id}`}
+                          onChange={(event) => updateSelected(event)}
+                          inputProps={{
+                            "aria-label": "controlled",
+                            "data-order": `${indexConvPoint}-${indexQuestion}`,
+                            "data-question-id": question.id,
+                            "data-conv-point-id": convPoint.id,
+                          }}
+                        />
+                      )}
+                    </Box>
                   </Card>
                 </Grid>
               ))

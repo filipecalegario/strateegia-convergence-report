@@ -18,6 +18,7 @@ import {
   CircularProgress,
 } from "@mui/material";
 import Album from "../components/Album";
+import Logout from "../components/Logout";
 
 export default function Report() {
   const navigate = useNavigate();
@@ -220,14 +221,25 @@ export default function Report() {
         sx={{
           marginTop: 2,
           display: "flex",
-          flexDirection: "column",
+          flexDirection: "row",
           alignItems: "center",
-          
+          justifyContent: "space-between",
         }}
       >
+        <Logout />
         <Typography component="h1" variant="h5">
           relatório pontos de convergência
         </Typography>
+        <Box></Box>
+      </Box>
+      <Box
+        sx={{
+          marginTop: 2,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+        }}
+      >
         <FormControl fullWidth sx={{ marginTop: 2, marginBottom: 2 }}>
           <InputLabel id="demo-simple-select-label">jornadas</InputLabel>
           <Select

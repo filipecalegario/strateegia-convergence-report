@@ -269,7 +269,7 @@ export default function Report() {
             label="mapas"
             onChange={handleMapChange}
           >
-            {maps.map((map) => {
+            {maps?.map((map) => {
               return (
                 <MenuItem key={map.id} value={map.id}>
                   {map.title}
